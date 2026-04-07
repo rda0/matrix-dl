@@ -86,17 +86,23 @@ class MatrixLogGetter:
             login_user = f"@{login_user}:{homeserver}"
 
         self.client = Client(mxid=login_user, base_url=self.matrix_url)
-        await self.client.login(password=self.password)
-
-        room_id = await self.resolve_room(self.room)
-        if not room_id:
-            print(f"Could not find room {self.room}", file=sys.stderr)
-            sys.exit(1)
 
         try:
+            await self.client.login(password=self.password)
+
+            room_id = await self.resolve_room(self.room)
+            if not room_id:
+                print(f"Could not find room {self.room}", file=sys.stderr)
+                sys.exit(1)
+
             await self.download(room_id)
         finally:
-            self.print_messages()
+            try:
+                self.print_messages()
+            finally:
+                session = getattr(getattr(self.client, "api", None), "session", None)
+                if session is not None and not session.closed:
+                    await session.close()
 
     async def resolve_room(self, room: str) -> Optional[str]:
         room = room.strip()
