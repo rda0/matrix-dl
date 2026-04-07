@@ -16,49 +16,6 @@ from mautrix.types import RoomAlias, RoomID
 DATE_FORMAT = "%Y-%m-%d"
 
 
-class Colors:
-    plat = sys.platform
-    supported_platform = plat != "Pocket PC" and (plat != "win32" or "ANSICON" in os.environ)
-    is_a_tty = hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
-
-    if not supported_platform or not is_a_tty:
-        HEADER = ""
-        OKBLUE = ""
-        OKGREEN = ""
-        WARNING = ""
-        FAIL = ""
-        ENDC = ""
-    else:
-        HEADER = "\033[95m"
-        OKBLUE = "\033[94m"
-        OKGREEN = "\033[92m"
-        WARNING = "\033[93m"
-        FAIL = "\033[91m"
-        ENDC = "\033[0m"
-
-    force_disable = False
-
-    @classmethod
-    def disable(cls):
-        cls.HEADER = ""
-        cls.OKBLUE = ""
-        cls.OKGREEN = ""
-        cls.WARNING = ""
-        cls.FAIL = ""
-        cls.ENDC = ""
-
-    @classmethod
-    def enable(cls):
-        if cls.force_disable:
-            return
-        cls.HEADER = "\033[95m"
-        cls.OKBLUE = "\033[94m"
-        cls.OKGREEN = "\033[92m"
-        cls.WARNING = "\033[93m"
-        cls.FAIL = "\033[91m"
-        cls.ENDC = "\033[0m"
-
-
 class MatrixLogGetter:
     def __init__(self):
         self.matrix_url = "https://matrix.org"
