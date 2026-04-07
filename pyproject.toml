@@ -1,0 +1,20 @@
+[project]
+name = "matrix-dl"
+version = "0.2.0"
+description = "Download logs from Matrix servers as raw text"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "Thibault Saunier" }
+]
+license = { text = "GPL-3.0-or-later" }
+dependencies = [
+  "mautrix>=0.20.0",
+]
+
+[project.scripts]
+matrix-dl = "matrix_dl:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
