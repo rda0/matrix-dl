@@ -13,7 +13,7 @@ from mautrix.client import Client
 from mautrix.errors import MNotFound
 from mautrix.types import RoomAlias, RoomID
 
-DATE_FORMAT = "%d%m%Y"
+DATE_FORMAT = "%Y-%m-%d"
 
 
 class Colors:
@@ -65,7 +65,7 @@ class MatrixLogGetter:
         self.username = None
         self.password = os.environ.get("MATRIX_PASSWORD")
         self.room = None
-        self.start_date = "01012017"
+        self.start_date = "2017-01-01"
         self.end_date = None
         self.messages = []
         self.client: Optional[Client] = None
@@ -164,22 +164,18 @@ class MatrixLogGetter:
                 return
 
     def print_messages(self):
-        cday = None
         print(f"Got {len(self.messages)} message events", file=sys.stderr)
 
         for message in self.messages:
             ts = message["origin_server_ts"] / 1000
-            date = dt.datetime.fromtimestamp(ts).date()
+            timestamp = dt.datetime.fromtimestamp(ts)
+            date = timestamp.date()
 
             if date < self.start_date or (self.end_date and date > self.end_date):
                 continue
 
-            day = dt.datetime.fromtimestamp(ts).strftime("%d-%m-%Y")
-            if day != cday:
-                cday = day
-                print(f"==== {Colors.HEADER}{day}{Colors.ENDC} ====")
-
-            time = dt.datetime.fromtimestamp(ts).strftime("%H:%M:%S")
+            day = timestamp.strftime("%Y-%m-%d")
+            time = timestamp.strftime("%H:%M:%S")
 
             sender = message.get("sender", "")
             user = sender[1:] if sender.startswith("@") else sender
@@ -206,7 +202,7 @@ class MatrixLogGetter:
             else:
                 text = body or f"[{msgtype or 'unknown message'}]"
 
-            print(f"{time} — {user}: {text}")
+            print(f"{day} {time} - {user}: {text}")
 
 
 def main():
@@ -239,7 +235,7 @@ def main():
     date_format_str = f"(format {DATE_FORMAT}) [default: %(default)s]"
     parser.add_argument(
         "--start-date",
-        default="01012017",
+        default="2017-01-01",
         help=f"Starting day to consider {date_format_str}",
     )
     parser.add_argument(
